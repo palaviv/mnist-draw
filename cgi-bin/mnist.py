@@ -37,7 +37,8 @@ try:
         arr = (255 - arr) / 255.
 
         # Load trained model
-        model = load_model("/tmp/model.h5")
+        model_name = re.search(r'model,(.*),data', data).group(1)
+        model = load_model(os.path.join("/tmp", model_name))
 
         # Predict class
         predictions = model.predict([arr])[0]

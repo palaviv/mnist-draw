@@ -23,9 +23,13 @@ $("#predict").click(function(){
   // Change status indicator
   $("#status").removeClass().toggleClass("fa fa-spinner fa-spin");
 
+  var model_path = $("#model-file").val();
+
   // Get canvas contents as url
   var fac = (1.) / 13.; 
-  var url = canvas.toDataURLWithMultiplier('png', fac);
+  var image_data = canvas.toDataURLWithMultiplier('png', fac);
+
+  var url = "model," + model_path + "," + image_data;
 
   // Post url to python script
   var jq = $.post('cgi-bin/mnist.py', url)
