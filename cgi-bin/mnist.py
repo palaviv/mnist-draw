@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 CGI script that accepts image urls and feeds them into a ML classifier. Results
 are returned in JSON format. 
@@ -11,7 +12,7 @@ import re
 import base64
 import numpy as np
 from PIL import Image
-from model import model
+from keras.models import load_model
 
 # Default output
 res = {"result": 0,
@@ -29,11 +30,14 @@ try:
         im = Image.open(image_bytes)
         arr = np.array(im)[:,:,0:1]
 
+        num_pixels = arr.shape[0] * arr.shape[1]
+        arr = arr.reshape(1, num_pixels).astype('float32')
+
         # Normalize and invert pixel values
         arr = (255 - arr) / 255.
 
         # Load trained model
-        model.load('cgi-bin/models/model.tfl')
+        model = load_model("/tmp/model.h5")
 
         # Predict class
         predictions = model.predict([arr])[0]
@@ -45,6 +49,7 @@ try:
 except Exception as e:
     # Return error data
     res['error'] = str(e)
+    print("Test", str(e), file=sys.stderr)
 
 # Print JSON response
 print("Content-type: application/json")
